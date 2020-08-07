@@ -52,7 +52,7 @@ class Trash(models.Model):
         verbose_name_plural = verbose_name = "垃圾"
         unique_together = ("content_type", "object_id")
 
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     object_name = models.CharField("名称", max_length=256, null=True, blank=True)
     json_data = JSONField("内容", blank=True, null=True)
@@ -61,17 +61,37 @@ class Trash(models.Model):
     def __unicode__(self):
         return "%s.%s" % (self.content_type, self.object_id)
 
+    def recover(self):
+        d = self.json_data
+        nd = {}
+        M = self.content_type.model_class()
+        rd = {}
+        for f in M._meta.get_fields():
+            if f.name not in d:
+                continue
+            if f.related_model:
+                if d[f.name]:
+                    if isinstance(d[f.name], list):
+                        rd[f.name] = f.related_model.objects.filter(id__in=d[f.name])
+                    else:
+                        nd[f.name] = f.related_model.objects.get(id=d[f.name])
+            else:
+                nd[f.name] = d[f.name]
+        m = M(**nd)
+        m.save()
+        for k, v in rd.iteritems():
+            setattr(m, k, v)
 
 class VersionHistory(models.Model):
     class Meta:
         verbose_name_plural = verbose_name = "版本历史"
         unique_together = ("content_type", "object_id", "version")
 
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    object_id = models.PositiveIntegerField("对象ID")
     content_object = GenericForeignKey('content_type', 'object_id')
     object_name = models.CharField("名称", max_length=256, null=True, blank=True)
-    version = models.PositiveIntegerField()
+    version = models.PositiveIntegerField("版本")
     json_data = JSONField("内容", blank=True, null=True)
     create_time = models.DateTimeField("更新时间", auto_now_add=True, db_index=True)
 
@@ -85,6 +105,8 @@ class VersionHistory(models.Model):
         data = self.json_data
         for f in m.fields:
             fn = f.name
+            if fn not in data:
+                continue
             v = data.get(fn)
             if isinstance(f, ForeignKey):
                 fn = "%s_id" % fn

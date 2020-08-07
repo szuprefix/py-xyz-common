@@ -7,4 +7,4 @@ from django.contrib.contenttypes.models import ContentType
 class ContenttypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContentType
-        fields = ("app_label", 'model', 'name', 'id')
+        fields = ("app_label", 'model', 'name', '__str__', 'id')

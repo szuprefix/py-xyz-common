@@ -60,12 +60,16 @@ def to_add_event(sender, **kwargs):
     instance = kwargs.pop('instance')
     Event.objects.create(content_object=instance, name=kwargs['name'], context=kwargs.get('context'))
 
+
 @receiver(user_logged_in)
 def add_user_login_event(sender, **kwargs):
     user = kwargs['user']
+    request = kwargs['request']
+    m = request.META
+    ip = m.get('HTTP_X_FORWARDED_FOR') or m.get('REMOTE_ADDR')
     name = 'login'
     login_type = getattr(user, 'login_type', None)
     if login_type:
         name = name + '.' + login_type
     backend = unicode(user.backend) if hasattr(user, 'backend') else None
-    signals.to_add_event.send_robust(user._meta.model, instance=user, name=name, context={'backend': backend})
+    signals.to_add_event.send_robust(user._meta.model, instance=user, name=name, context={'backend': backend, 'ip': ip})
