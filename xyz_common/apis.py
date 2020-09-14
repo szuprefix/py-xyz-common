@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 from . import serializers, models
 from rest_framework import viewsets, decorators
 from xyz_restful.decorators import register
-
+from xyz_restful.helper import register_urlpatterns
+from .urls import urlpatterns
 __author__ = 'denishuang'
 
 
@@ -38,3 +39,6 @@ class ContenttypeViewSet(viewsets.ReadOnlyModelViewSet):
     @decorators.list_route(['GET'])
     def all(self, request):
         return self.list(request)
+
+from .apps import Config
+register_urlpatterns(Config.label, urlpatterns)
