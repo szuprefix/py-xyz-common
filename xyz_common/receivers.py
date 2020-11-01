@@ -6,6 +6,8 @@ from django.forms.models import model_to_dict
 from django.contrib.contenttypes.models import ContentType
 from . import signals
 from django.contrib.auth.signals import user_logged_in
+import json
+from xyz_util.datautils import JSONEncoder
 
 @receiver(pre_delete, sender=None)
 def save_object_to_trash(sender, **kwargs):
@@ -40,8 +42,9 @@ def save_object_to_version_history(sender, **kwargs):
     name = unicode(instance)
     data = model_to_dict(instance, exclude=exclude_fields)
     vo = VersionHistory.objects.filter(content_type=ctype, object_id=id).order_by("-version").first()
+    func = lambda a: json.dumps(a, cls=JSONEncoder)
     if vo:
-        if vo.json_data == data:
+        if func(vo.json_data) == func(data):
             return
         version = vo.version + 1
     else:
