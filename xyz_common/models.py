@@ -21,7 +21,8 @@ class Setting(models.Model):
     json_data = JSONField("内容", blank=True, null=True)
 
     def __unicode__(self):
-        return "%s.%s" % (self.content_object, self.name)
+        owner = self.owner if self.owner_id else self.owner_type
+        return "%s.%s" % (owner, self.name)
 
 
 
