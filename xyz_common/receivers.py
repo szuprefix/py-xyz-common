@@ -6,8 +6,10 @@ from django.forms.models import model_to_dict
 from django.contrib.contenttypes.models import ContentType
 from . import signals
 from django.contrib.auth.signals import user_logged_in
-import json
+import json, logging
 from xyz_util.datautils import JSONEncoder
+
+log = logging.getLogger('django')
 
 @receiver(pre_delete, sender=None)
 def save_object_to_trash(sender, **kwargs):
@@ -60,8 +62,12 @@ def save_object_to_version_history(sender, **kwargs):
 
 @receiver(signals.to_add_event)
 def to_add_event(sender, **kwargs):
-    instance = kwargs.pop('instance')
-    Event.objects.create(content_object=instance, name=kwargs['name'], context=kwargs.get('context'))
+    try:
+        instance = kwargs.pop('instance')
+        Event.objects.create(owner=instance, name=kwargs['name'], context=kwargs.get('context'))
+    except:
+        import traceback
+        log.error('common to_add_event error:%s', traceback.format_exc())
 
 
 @receiver(user_logged_in)

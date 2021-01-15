@@ -43,7 +43,7 @@ class Event(models.Model):
         return "%s.%s@%s" % (self.owner, self.name, self.create_time.isoformat())
 
     def object_name(self):
-        return unicode(self.content_object)
+        return unicode(self.owner)
 
     object_name.short_description = "对象名称"
 
