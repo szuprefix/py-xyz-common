@@ -16,7 +16,7 @@ def async_result(request, task_id):
                 body['result'] = unicode(body['result'])
             # print body
             request.websocket.send(('%s\r' % json.dumps(body)).encode('utf8'))
-        except Exception, e:
+        except Exception:
             import traceback
             log.error("async_result dump json error, body: %s; error: %s", body, traceback.format_exc())
 
@@ -36,6 +36,6 @@ def async_result(request, task_id):
         pm(d)
         try:
             r = rs.get(on_message=pm, propagate=False)
-        except Exception, e:
+        except Exception as e:
             body = {'status': 'FAILURE', 'result': unicode(e)}
             request.websocket.send(('%s\r' % json.dumps(body)).encode('utf8'))
