@@ -8,6 +8,7 @@ from . import signals
 from django.contrib.auth.signals import user_logged_in
 import json, logging
 from xyz_util.datautils import JSONEncoder
+from six import text_type
 
 log = logging.getLogger('django')
 
@@ -80,5 +81,5 @@ def add_user_login_event(sender, **kwargs):
     login_type = getattr(user, 'login_type', None)
     if login_type:
         name = name + '.' + login_type
-    backend = unicode(user.backend) if hasattr(user, 'backend') else None
+    backend = text_type(user.backend) if hasattr(user, 'backend') else None
     signals.to_add_event.send_robust(user._meta.model, instance=user, name=name, context={'backend': backend, 'ip': ip})

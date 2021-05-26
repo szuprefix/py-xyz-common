@@ -36,7 +36,7 @@ class ContenttypeViewSet(viewsets.ReadOnlyModelViewSet):
             lookup = (lookup | q) if lookup else q
         return qset.filter(lookup) if lookup else qset
 
-    @decorators.list_route(['GET'])
+    @decorators.action(['GET'], detail=False)
     def all(self, request):
         return self.list(request)
 
