@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from six import text_type
 
 from xyz_util.modelutils import JSONField
 
@@ -20,7 +21,7 @@ class Setting(models.Model):
     name = models.CharField("名称", max_length=64, null=False, blank=False)
     json_data = JSONField("内容", blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         owner = self.owner if self.owner_id else self.owner_type
         return "%s.%s" % (owner, self.name)
 
@@ -39,11 +40,11 @@ class Event(models.Model):
     context = JSONField("上下文", blank=True, null=True)
     create_time = models.DateTimeField("创建时间", auto_now_add=True, db_index=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s.%s@%s" % (self.owner, self.name, self.create_time.isoformat())
 
     def object_name(self):
-        return unicode(self.owner)
+        return text_type(self.owner)
 
     object_name.short_description = "对象名称"
 
@@ -59,7 +60,7 @@ class Trash(models.Model):
     json_data = JSONField("内容", blank=True, null=True)
     create_time = models.DateTimeField("删除时间", auto_now_add=True, db_index=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s.%s" % (self.content_type, self.object_id)
 
     def recover(self):
@@ -80,7 +81,7 @@ class Trash(models.Model):
                 nd[f.name] = d[f.name]
         m = M(**nd)
         m.save()
-        for k, v in rd.iteritems():
+        for k, v in rd.items():
             setattr(m, k, v)
 
 class VersionHistory(models.Model):
@@ -96,7 +97,7 @@ class VersionHistory(models.Model):
     json_data = JSONField("内容", blank=True, null=True)
     create_time = models.DateTimeField("更新时间", auto_now_add=True, db_index=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s.%s.V%d" % (self.content_type, self.object_id, self.version)
 
     def recover(self):

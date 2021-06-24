@@ -4,7 +4,7 @@ from . import serializers, models
 from rest_framework import viewsets, decorators
 from xyz_restful.decorators import register
 from xyz_restful.helper import register_urlpatterns
-from .urls import urlpatterns
+from . import urls
 __author__ = 'denishuang'
 
 
@@ -41,4 +41,4 @@ class ContenttypeViewSet(viewsets.ReadOnlyModelViewSet):
         return self.list(request)
 
 from .apps import Config
-register_urlpatterns(Config.label, urlpatterns)
+register_urlpatterns(Config.label, urls)

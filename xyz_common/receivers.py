@@ -21,7 +21,7 @@ def save_object_to_trash(sender, **kwargs):
         return
     ctype = ContentType.objects.get_for_model(instance)
     id = instance.id
-    name = unicode(instance)
+    name = text_type(instance)
     Trash.objects.update_or_create(
         content_type=ctype,
         object_id=id,
@@ -42,7 +42,7 @@ def save_object_to_version_history(sender, **kwargs):
         return
     ctype = ContentType.objects.get_for_model(instance)
     id = instance.id
-    name = unicode(instance)
+    name = text_type(instance)
     data = model_to_dict(instance, exclude=exclude_fields)
     vo = VersionHistory.objects.filter(content_type=ctype, object_id=id).order_by("-version").first()
     func = lambda a: json.dumps(a, cls=JSONEncoder)
