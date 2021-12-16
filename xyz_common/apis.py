@@ -42,3 +42,15 @@ class ContenttypeViewSet(viewsets.ReadOnlyModelViewSet):
 
 from .apps import Config
 register_urlpatterns(Config.label, urls)
+
+
+
+@register()
+class EventViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Event.objects.all()
+    serializer_class = serializers.EventSerializer
+    filter_fields = {
+        'name': ['exact'],
+        'owner_type_id': ['exact'],
+        'owner_id': ['exact', 'in'],
+    }

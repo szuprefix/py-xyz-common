@@ -34,7 +34,7 @@ class Event(models.Model):
 
     owner_type = models.ForeignKey(ContentType, verbose_name='属主类别', null=True, blank=True,
                                    on_delete=models.PROTECT)
-    owner_id = models.PositiveIntegerField(verbose_name='属主编号', null=True, blank=True)
+    owner_id = models.PositiveIntegerField(verbose_name='属主编号', null=True, blank=True, db_index=True)
     owner = GenericForeignKey('owner_type', 'owner_id')
     name = models.CharField("名称", max_length=64)
     context = JSONField("上下文", blank=True, null=True)
