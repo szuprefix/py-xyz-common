@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from __future__ import print_function
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, pre_save
 from .models import Trash, VersionHistory, Event
@@ -11,6 +12,7 @@ from xyz_util.datautils import JSONEncoder
 from six import text_type
 
 log = logging.getLogger('django')
+
 
 @receiver(pre_delete, sender=None)
 def save_object_to_trash(sender, **kwargs):
@@ -46,20 +48,32 @@ def save_object_to_version_history(sender, **kwargs):
     data = model_to_dict(instance, exclude=exclude_fields)
     vo = VersionHistory.objects.filter(content_type=ctype, object_id=id).order_by("-version").first()
     func = lambda a: json.dumps(a, cls=JSONEncoder)
+    cfs = []
     if vo:
-        if func(vo.json_data) == func(data):
+        s1 = func(vo.json_data)
+        s2 = func(data)
+        if s1 == s2:
             return
+        d1 = json.loads(s1)
+        d2 = json.loads(s2)
+        for k in d2.keys():
+            if d2[k] != d1[k]:
+                cfs.append(k)
         version = vo.version + 1
     else:
         version = 1
 
-    VersionHistory.objects.create(
+    history = VersionHistory.objects.create(
         content_type=ctype,
         object_id=id,
         version=version,
         object_name=name,
         json_data=data
     )
+    if cfs:
+        # print(cfs)
+        signals.new_version_posted.send_robust(sender, instance=instance, history=history, changed_fields=cfs)
+
 
 @receiver(signals.to_add_event)
 def to_add_event(sender, **kwargs):

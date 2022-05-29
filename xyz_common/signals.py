@@ -6,3 +6,4 @@ from django.dispatch import Signal
 
 to_save_version = Signal(providing_args=["instance", "exclude_fields"])
 to_add_event = Signal(providing_args=["instance", "name", "context"])
+new_version_posted = Signal(providing_args=["instance", "history", "changed_fields"])
