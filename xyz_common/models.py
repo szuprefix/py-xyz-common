@@ -90,7 +90,7 @@ class VersionHistory(models.Model):
         unique_together = ("content_type", "object_id", "version")
 
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
-    object_id = models.PositiveIntegerField("对象ID")
+    object_id = models.PositiveIntegerField("对象ID", db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
     object_name = models.CharField("名称", max_length=256, null=True, blank=True)
     version = models.PositiveIntegerField("版本")
