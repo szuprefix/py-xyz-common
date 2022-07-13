@@ -51,6 +51,6 @@ class EventViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.EventSerializer
     filter_fields = {
         'name': ['exact'],
-        'owner_type_id': ['exact'],
+        'owner_type': ['exact'],
         'owner_id': ['exact', 'in'],
     }
