@@ -18,7 +18,9 @@ class ContenttypeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = []
     search_fields = ('app_label', 'model')
     filter_fields = {
-        'id': ['exact', 'in']
+        'id': ['exact', 'in'],
+        'app_label': ['exact'],
+        'model': ['exact']
     }
 
     def filter_queryset(self, queryset):
