@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from . import signals
 from django.contrib.auth.signals import user_logged_in
 import json, logging
-from xyz_util.datautils import JSONEncoder
+from xyz_util.modelutils import JSONEncoder
 from six import text_type
 
 log = logging.getLogger('django')
