@@ -17,7 +17,7 @@ class ContenttypeViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ContenttypeSerializer
     permission_classes = []
     search_fields = ('app_label', 'model')
-    filter_fields = {
+    filterset_fields = {
         'id': ['exact', 'in'],
         'app_label': ['exact'],
         'model': ['exact']
@@ -51,7 +51,7 @@ register_urlpatterns(Config.label, urls)
 class EventViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Event.objects.all()
     serializer_class = serializers.EventSerializer
-    filter_fields = {
+    filterset_fields = {
         'name': ['exact'],
         'owner_type': ['exact'],
         'owner_id': ['exact', 'in'],

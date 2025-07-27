@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from six import text_type
 
 from xyz_util.modelutils import JSONField
 
@@ -44,7 +43,7 @@ class Event(models.Model):
         return "%s.%s@%s" % (self.owner, self.name, self.create_time.isoformat())
 
     def object_name(self):
-        return text_type(self.owner)
+        return str(self.owner)
 
     object_name.short_description = "对象名称"
 
